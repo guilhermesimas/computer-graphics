@@ -248,8 +248,8 @@ void haarInv(Image& input, Image& output)
     }
     float *bufferOutputFinal = (float*)malloc(w*h*d*sizeof(float));
     for(int k=0;k<d;k++){
-        for(int j=0;j<h;j+=2){
-            for(int i=0;i<w;i++){
+        for(int j=0;j<h;j++){
+            for(int i=0;i<w;i+=2){
                 bufferOutputFinal[j*w*d + i*d +k] = bufferOutput[j*w*d + (i/2)*d +k] + bufferOutput[j*w*d + ((i+w)/2)*d +k];
                 bufferOutputFinal[j*w*d + (i+1)*d +k] = bufferOutput[j*w*d + (i/2)*d +k] - bufferOutput[j*w*d + ((i+w)/2)*d +k];
             }
@@ -263,5 +263,21 @@ void haarInv(Image& input, Image& output)
 
 void enhanceHaar(Image& input, Image& output)
 {
-    output = Image(input);
+    int w,h,d;
+    input.getDimensions(w,h,d);
+    float *bufferOutput = (float*)malloc(w*h*d*sizeof(float));
+    std::vector<float> buffer = input.getColorBuffer();
+    for(int k=0;k<d;k++){
+        for(int j=0;j<h;j++){
+            for(int i=0;i<w;i++){
+                if(i<w/2 &&  j<h/2){
+                    bufferOutput[j*w*d + i*d +k] = buffer[j*w*d + i*d +k];
+                } else {
+                    bufferOutput[j*w*d + i*d +k] = 0;
+                }
+            }
+        }
+    }
+    Image haarNoDetails = Image(w,h,d,bufferOutput);
+    haarInv(haarNoDetails,output);
 }
