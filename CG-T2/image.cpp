@@ -2,6 +2,8 @@
 
 #include <QtMath>
 
+#include "convolution.h"
+
 Image::Image()
     : _width(0), _height(0), _depth(0)
 {
@@ -146,7 +148,23 @@ QImage Image::toQImage()
 
 void smoothing(Image& input, Image& output)
 {
-    output = Image(input);
+    float mask[] = {
+        1.0f,2.0f,1.0f,
+        2.0f,4.0f,2.0f,
+        1.0f,2.0f,1.0f
+    };
+        Convolution conv(input,mask);
+    int w,h,d;
+    input.getDimensions(w,h,d);
+    float bufferOutput[w*h*d] = {0.0f};
+    for(int k=0;k<d;k++){
+        for(int j=0;j<h;j++){
+            for(int i=0;i<w;i++){
+                bufferOutput[j*w*d + i*d +k] = conv.evaluate(i,j);
+            }
+        }
+    }
+    output = Image(w,h,d,bufferOutput);
 }
 
 
