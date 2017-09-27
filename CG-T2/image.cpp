@@ -148,11 +148,12 @@ QImage Image::toQImage()
 
 void smoothing(Image& input, Image& output)
 {
-    float mask[] = {
+    float mask_array[] = {
         1.0f,2.0f,1.0f,
         2.0f,4.0f,2.0f,
         1.0f,2.0f,1.0f
     };
+    std::vector<float> mask(mask_array, mask_array + sizeof(mask_array) / sizeof(mask_array[0]));
     Convolution conv(input,mask);
     int w,h,d;
     input.getDimensions(w,h,d);
@@ -171,7 +172,32 @@ void smoothing(Image& input, Image& output)
 
 void sobel(Image& input, Image& output)
 {
-    output = Image(input);
+    float mask_array_x[] = {
+        1.0f,0.0f,-1.0f,
+        2.0f,0.0f,-2.0f,
+        1.0f,0.0f,-1.0f
+    };
+    float mask_array_y[] = {
+        1.0f,2.0f,1.0f,
+        0.0f,0.0f,0.0f,
+        -1.0f,-2.0f,-1.0f
+    };
+    std::vector<float> mask_x(mask_array_x, mask_array_x + sizeof(mask_array_x) / sizeof(mask_array_x[0]));
+    std::vector<float> mask_y(mask_array_y, mask_array_y + sizeof(mask_array_y) / sizeof(mask_array_y[0]));
+    Convolution conv_x(input,mask_x);
+    Convolution conv_y(input,mask_y);
+    int w,h,d;
+    input.getDimensions(w,h,d);
+    float *bufferOutput = (float*)malloc(w*h*d*sizeof(float));
+    for(int k=0;k<d;k++){
+        for(int j=0;j<h;j++){
+            for(int i=0;i<w;i++){
+                bufferOutput[j*w*d + i*d +k] = sqrt(pow(conv_x.evaluate(i,j,k),2) + pow(conv_y.evaluate(i,j,k),2));
+            }
+        }
+    }
+    output = Image(w,h,d,bufferOutput);
+    free(bufferOutput);
 }
 
 

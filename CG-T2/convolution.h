@@ -8,7 +8,7 @@ class Convolution
 {
 
 public:
-    Convolution(Image& img, float mask[]);
+    Convolution(Image& img, std::vector<float> mask);
 
     float evaluate(int x, int y, int k);
 
@@ -17,7 +17,7 @@ protected:
     int _height;
     int _depth;
     std::vector<float> _buffer;
-    float *_mask;
+    std::vector<float> _mask;
     float _denominator;
 };
 
