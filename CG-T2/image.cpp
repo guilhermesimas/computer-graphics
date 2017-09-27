@@ -234,7 +234,20 @@ void haar(Image& input, Image& output)
 
 void haarInv(Image& input, Image& output)
 {
-    output = Image(input);
+    std::vector<float> buffer = input.getColorBuffer();
+    int w,h,d;
+    input.getDimensions(w,h,d);
+    float *bufferOutput = (float*)malloc(w*h*d*sizeof(float));
+    for(int k=0;k<d;k++){
+        for(int j=0;j<h;j+=2){
+            for(int i=0;i<w;i++){
+                bufferOutput[j*w*d + i*d +k] = buffer[(j/2)*w*d + i*d +k] + buffer[((j+h)/2)*w*d + i*d +k];
+                bufferOutput[(j+1)*w*d + i*d +k] = buffer[(j/2)*w*d + i*d +k] - buffer[((j+h)/2)*w*d + i*d +k];
+            }
+        }
+    }
+    output = Image(w,h,d,bufferOutput);
+    free(bufferOutput);
 }
 
 
