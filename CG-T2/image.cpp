@@ -246,8 +246,18 @@ void haarInv(Image& input, Image& output)
             }
         }
     }
-    output = Image(w,h,d,bufferOutput);
+    float *bufferOutputFinal = (float*)malloc(w*h*d*sizeof(float));
+    for(int k=0;k<d;k++){
+        for(int j=0;j<h;j+=2){
+            for(int i=0;i<w;i++){
+                bufferOutputFinal[j*w*d + i*d +k] = bufferOutput[j*w*d + (i/2)*d +k] + bufferOutput[j*w*d + ((i+w)/2)*d +k];
+                bufferOutputFinal[j*w*d + (i+1)*d +k] = bufferOutput[j*w*d + (i/2)*d +k] - bufferOutput[j*w*d + ((i+w)/2)*d +k];
+            }
+        }
+    }
+    output = Image(w,h,d,bufferOutputFinal);
     free(bufferOutput);
+    free(bufferOutputFinal);
 }
 
 
