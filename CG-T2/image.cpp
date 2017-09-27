@@ -153,18 +153,19 @@ void smoothing(Image& input, Image& output)
         2.0f,4.0f,2.0f,
         1.0f,2.0f,1.0f
     };
-        Convolution conv(input,mask);
+    Convolution conv(input,mask);
     int w,h,d;
     input.getDimensions(w,h,d);
-    float bufferOutput[w*h*d] = {0.0f};
+    float *bufferOutput = (float*)malloc(w*h*d*sizeof(float));
     for(int k=0;k<d;k++){
         for(int j=0;j<h;j++){
             for(int i=0;i<w;i++){
-                bufferOutput[j*w*d + i*d +k] = conv.evaluate(i,j);
+                bufferOutput[j*w*d + i*d +k] = conv.evaluate(i,j,k);
             }
         }
     }
     output = Image(w,h,d,bufferOutput);
+    free(bufferOutput);
 }
 
 

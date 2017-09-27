@@ -26,13 +26,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    image.cpp \
-    convolution.cpp
+    convolution.cpp \
+    image.cpp
+
 
 HEADERS += \
         mainwindow.h \
+    convolution.h \
     image.h \
-    convolution.h
+
 
 FORMS += \
         mainwindow.ui
