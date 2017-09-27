@@ -203,7 +203,21 @@ void sobel(Image& input, Image& output)
 
 void haar(Image& input, Image& output)
 {
-    output = Image(input);
+    std::vector<float> buffer = input.getColorBuffer();
+    int w,h,d;
+    input.getDimensions(w,h,d);
+    float *bufferOutput = (float*)malloc(w*h*d*sizeof(float));
+    for(int k=0;k<d;k++){
+        for(int j=0;j<h;j++){
+            for(int i=0;i<w/2;i++){
+                bufferOutput[j*w*d + i*d +k] = (buffer[j*w*d + (2*i)*d +k] + buffer[j*w*d + (2*i+1)*d +k])/2;
+                bufferOutput[j*w*d + (i+(w/2))*d +k] = (buffer[j*w*d + (2*i)*d +k] - buffer[j*w*d + (2*i+1)*d +k])/2;
+
+            }
+        }
+    }
+    output = Image(w,h,d,bufferOutput);
+    free(bufferOutput);
 }
 
 
